@@ -84,13 +84,13 @@ class YOLOService:
 
         try:
             results = self.model.predict(
-                source=cv_img,
-                conf=conf,
-                iou=settings.IOU_THRESHOLD,
-                imgsz=320,
-                device="cpu",
-                verbose=False,
-            )
+        source=cv_img,
+        conf=conf,
+        iou=settings.IOU_THRESHOLD,
+        imgsz=160,
+        device="cpu",
+        verbose=True,
+)
 
             logger.info("YOLO: model.predict() returned successfully")
 
