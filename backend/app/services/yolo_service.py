@@ -71,28 +71,39 @@ class YOLOService:
         h, w = cv_img.shape[:2]
 
         start_time = time.perf_counter()
-        
+
         # Run YOLO11 prediction
         logger.info(
-        "YOLO: image size before inference: width=%d height=%d",
-        w,
-        h,
-    )
+            "YOLO: image size before inference: width=%d height=%d",
+            w,
+            h,
+        )
 
         logger.info("YOLO: starting CPU inference")
+        logger.info("YOLO: calling model.predict()")
 
-        results = self.model.predict(
-        source=cv_img,
-        conf=conf,
-        iou=settings.IOU_THRESHOLD,
-        imgsz=640,
-        device="cpu",
-        verbose=False,
-    )
+        try:
+            results = self.model.predict(
+                source=cv_img,
+                conf=conf,
+                iou=settings.IOU_THRESHOLD,
+                imgsz=320,
+                device="cpu",
+                verbose=False,
+            )
+
+            logger.info("YOLO: model.predict() returned successfully")
+
+        except Exception:
+            logger.exception("YOLO: model.predict() FAILED")
+            raise
 
         logger.info("YOLO: inference completed")
-        
-        inference_time_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        inference_time_ms = round(
+            (time.perf_counter() - start_time) * 1000,
+            2,
+        )
 
         # Parse detected bounding boxes
         detections: List[BoundingBox] = []
