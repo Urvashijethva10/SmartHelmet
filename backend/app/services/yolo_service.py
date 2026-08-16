@@ -73,12 +73,24 @@ class YOLOService:
         start_time = time.perf_counter()
         
         # Run YOLO11 prediction
+        logger.info(
+        "YOLO: image size before inference: width=%d height=%d",
+        w,
+        h,
+    )
+
+        logger.info("YOLO: starting CPU inference")
+
         results = self.model.predict(
-            source=cv_img,
-            conf=conf,
-            iou=settings.IOU_THRESHOLD,
-            verbose=False,
-        )
+        source=cv_img,
+        conf=conf,
+        iou=settings.IOU_THRESHOLD,
+        imgsz=640,
+        device="cpu",
+        verbose=False,
+    )
+
+        logger.info("YOLO: inference completed")
         
         inference_time_ms = round((time.perf_counter() - start_time) * 1000, 2)
 
