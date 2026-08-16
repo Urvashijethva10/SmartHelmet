@@ -96,3 +96,33 @@ async def health_check():
         database_name=settings.DATABASE_NAME,
         active_classes=settings.CLASS_MAPPING,
     )
+
+logger.info("DETECT: request received")
+
+image_bytes = await file.read()
+
+logger.info(
+    "DETECT: image received: filename=%s size=%d bytes",
+    file.filename,
+    len(image_bytes),
+)
+
+logger.info("DETECT: starting YOLO prediction")
+
+summary, detections, annotated_base64, inference_time_ms, w, h = yolo_service.predict(
+    image_bytes=image_bytes,
+    filename=file.filename or "image.jpg",
+    confidence_threshold=confidence,
+)
+
+logger.info(
+    "DETECT: YOLO finished in %s ms, detections=%d",
+    inference_time_ms,
+    len(detections),
+)
+
+logger.info("DETECT: saving result to MongoDB")
+
+doc_id = db_manager.insert_detection(detection_doc)
+
+logger.info("DETECT: MongoDB save completed, id=%s", doc_id)
